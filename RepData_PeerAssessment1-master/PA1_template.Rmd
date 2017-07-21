@@ -47,8 +47,14 @@ print(per_day_median[, 1:2])
 print('Median steps per day (with impution):')
 print(per_day_median_imp[, 1:2])
 
-hist(per_day_mean[,2], main='Histogram of mean steps per day', xlab='Mean steps per day (no impution)')
+# total mean
+sum(per_day_mean_imp$steps)
+# total median
+sum(per_day_median_imp$steps)
 
+hist(per_day_mean[,2], main='Histogram of mean steps per day (no impution)', xlab='Mean steps per day (no impution)')
+
+hist(per_day_mean_imp[,2], main='Histogram of mean steps per day (with impution)', xlab='Mean steps per day (with impution)')
 ```
 ## What is the average daily activity pattern?
 

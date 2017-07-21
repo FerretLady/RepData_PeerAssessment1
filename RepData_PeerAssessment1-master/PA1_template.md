@@ -371,10 +371,34 @@ print(per_day_median_imp[, 1:2])
 ```
 
 ```r
-hist(per_day_mean[,2], main='Histogram of mean steps per day', xlab='Mean steps per day (no impution)')
+# total mean
+sum(per_day_mean_imp$steps)
+```
+
+```
+## [1] 2310.444
+```
+
+```r
+# total median
+sum(per_day_median_imp$steps)
+```
+
+```
+## [1] 0
+```
+
+```r
+hist(per_day_mean[,2], main='Histogram of mean steps per day (no impution)', xlab='Mean steps per day (no impution)')
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
+hist(per_day_mean_imp[,2], main='Histogram of mean steps per day (with impution)', xlab='Mean steps per day (with impution)')
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-2.png)<!-- -->
 ## What is the average daily activity pattern?
 
 Plotted using Lattice plotting system.
