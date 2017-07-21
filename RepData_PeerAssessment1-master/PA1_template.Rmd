@@ -1,0 +1,76 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+```{r load}
+library(mice)
+library(lattice)
+data <- read.csv('activity.csv')
+```
+
+## Imputing missing values
+
+Due to practical concerns the imputing step is done first (you can not calculate mean otherwise).
+Imputing is done by mice library, because it is a little more sophisticated than just taking the mean.
+
+```{r}
+# check number of NA's:
+md.pattern(data)
+
+impute <- mice(data, m=1, maxit = 10, method = 'pmm', seed = 500)
+imputed_data <- complete(impute, 1)
+```
+
+## What is mean total number of steps taken per day?
+
+```{r}
+data$date <- as.Date(data$date, format='%Y-%m-%d')
+imputed_data$date <- as.Date(imputed_data$date, format='%Y-%m-%d')
+per_day_mean <- aggregate(data, list(period=data$date), mean)
+per_day_mean_imp <- aggregate(imputed_data, list(period=imputed_data$date), mean)
+
+per_day_median <- aggregate(data, list(period=data$date), median)
+per_day_median_imp <- aggregate(imputed_data, list(period=imputed_data$date), median)
+# Mean steps per day:
+print('Mean steps per day (without impution):')
+print(per_day_mean[, 1:2])
+print('Mean steps per day (with impution):')
+print(per_day_mean_imp[, 1:2])
+print('Median steps per day (without impution):')
+print(per_day_median[, 1:2])
+print('Median steps per day (with impution):')
+print(per_day_median_imp[, 1:2])
+
+hist(per_day_mean[,2], main='Histogram of mean steps per day', xlab='Mean steps per day (no impution)')
+
+```
+## What is the average daily activity pattern?
+
+Plotted using Lattice plotting system.
+
+```{r}
+# Add weekdays and weekend variable
+imputed_data$day <- as.factor(ifelse((weekdays(imputed_data$date) == "zaterdag" | weekdays(imputed_data$date) == "zondag"), 'weekend', 'weekday'))
+
+# Average over time series
+avg_split <- aggregate(imputed_data$steps, by= list(imputed_data$interval, imputed_data$day), mean)
+avg_total <- aggregate(imputed_data$steps, by= list(imputed_data$interval), mean)
+
+plot(avg_total, type = "l", xlab = "Time Intervals (5-minute)", 
+    ylab = "Mean number of steps taken (all Days)", main = "Average Steps Taken at 5 minute Intervals", 
+    col = "blue")
+
+names(avg_split) <- c("interval", "day", "steps")
+xyplot(steps ~ interval | day, data = avg_split, type = "l", layout = c(1, 2), 
+    xlab = "Interval", ylab = "Number of steps")
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+Weekdays seem to have a more concentrated area where steps are being taken. It is likely that this is between 'working hours'. Weekend days have a more random pattern.
